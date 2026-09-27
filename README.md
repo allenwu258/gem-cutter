@@ -1,242 +1,387 @@
 # Gem Cutter
 
-Gem Cutter 是一个“证据优先”的商业机会评估工作台，用于把一个热点、产品想法或市场机会，转换成可审计的评估链路、评分账本、Gate 决策和 PRD 草案。当前实现面向本地开发环境：后端使用 FastAPI，前端使用 React + Vite，存储使用 SQLite 关系表。
+> **Evidence-first AI trend intelligence and opportunity evaluation workspace**
+>
+> 把分散的热点信号，转换为可验证的证据、可复算的评分、明确的决策和可执行的下一步。
 
-Gem Cutter is an evidence-first commercial opportunity evaluation workspace. It turns an idea, trend, or market opportunity into an auditable evaluation chain, score ledger, Gate decision, and PRD draft. The current implementation targets local development with FastAPI, React + Vite, and SQLite relational storage.
+Gem Cutter 是一个面向本地开发的 AI 热点识别与价值评估工具。它的目标不是让大模型生成一份看起来完整的热点报告，而是建立一条可以被追溯、复核、重算和持续更新的决策链：
 
-## 目录 / Contents
+~~~text
+热点 / 产品想法 / 技术主题
+  -> 信号采集
+  -> 证据标准化
+  -> 主题聚合
+  -> 多维评分
+  -> Gate 决策
+  -> 报告 / PRD / 下一步行动
+~~~
 
-- [项目定位 / Product Positioning](#项目定位--product-positioning)
-- [当前功能 / Current Capabilities](#当前功能--current-capabilities)
-- [业务链路 / Business Chain](#业务链路--business-chain)
-- [架构概览 / Architecture](#架构概览--architecture)
-- [本地启动 / Local Setup](#本地启动--local-setup)
-- [配置 / Configuration](#配置--configuration)
-- [存储 / Storage](#存储--storage)
-- [测试 / Tests](#测试--tests)
-- [代码地图 / Code Map](#代码地图--code-map)
-- [开发原则 / Development Principles](#开发原则--development-principles)
+当前版本已经打通一个可运行的本地垂直切片：FastAPI 后端、React + Vite 前端、SQLite 关系存储、Mock 数据源、Ark Responses API 搜索接入、证据账本、评分账本、Gate 决策、Markdown 报告和条件式 PRD 生成。
 
-## 项目定位 / Product Positioning
+English summary: Gem Cutter is an evidence-first workspace for discovering and evaluating commercial, media, and technology trends. The current MVP focuses on an auditable pipeline from raw signals to evidence, scores, gates, reports, and PRD drafts.
 
-Gem Cutter 不是自由格式报告生成器。它的核心约束是：报告、PRD 和后续产品判断必须来自结构化证据与评分账本，而不是让 LLM 直接给出不可追溯的结论。
+## 目录
 
-Gem Cutter is not a free-form report generator. Its central constraint is that reports, PRDs, and product decisions must be grounded in structured evidence and score ledgers, rather than opaque LLM conclusions.
+- [为什么做这个项目](#为什么做这个项目)
+- [产品定位与用户价值](#产品定位与用户价值)
+- [当前实现范围](#当前实现范围)
+- [核心业务链路](#核心业务链路)
+- [评估模型](#评估模型)
+- [系统架构](#系统架构)
+- [LLM 的职责边界](#llm-的职责边界)
+- [本地启动](#本地启动)
+- [配置](#配置)
+- [API](#api)
+- [存储模型](#存储模型)
+- [前端工作台](#前端工作台)
+- [代码地图](#代码地图)
+- [测试与验证](#测试与验证)
+- [当前边界与已知限制](#当前边界与已知限制)
+- [演进路线](#演进路线)
+- [开发原则](#开发原则)
 
-当前版本主要解决三件事：
+## 为什么做这个项目
 
-- 把输入机会拆解成 7 个商业评估维度，并生成可执行的搜索计划。
-- 将搜索结果标准化为证据项、证据簇和评分账本。
-- 在 Gate 通过后生成报告或 PRD，并保留证据引用和模型调用日志。
+互联网热点、媒体新闻和技术趋势都在高速变化，但“热点”并不等于“机会”，高热度也不等于高可信度。用户真正需要回答的是：
 
-The current version focuses on three jobs:
+- 这个主题是否真实存在，还是由少量转载或营销内容制造出来的噪音？
+- 它是在增长、稳定、衰退，还是短期爆发后即将消失？
+- 讨论背后是否存在明确的用户痛点、技术需求或内容机会？
+- 对当前用户、市场、团队能力和时间窗口，它是否值得投入？
+- 哪些结论有证据，哪些只是模型推断，哪些关键假设仍未验证？
+- 下一步应该继续观察、补充调研、做用户验证、制作 Demo，还是停止投入？
 
-- Break an input opportunity into 7 commercial evaluation dimensions and an executable search plan.
-- Normalize search results into evidence items, evidence clusters, and score ledgers.
-- Generate reports or PRDs after the Gate allows it, while preserving evidence references and model call logs.
+Gem Cutter 将这些问题拆成结构化对象和可审计阶段，让 AI 参与语义理解与研究归纳，同时让后端负责证据约束、评分复算和状态流转。
 
-## 当前功能 / Current Capabilities
+## 产品定位与用户价值
 
-- OpportunityProject 创建与历史项目查看。
-- EvaluationRun 状态机：planning、collecting signals、normalizing evidence、clustering、scoring、gate review、rendering、completed/failed。
-- Mock source adapters，用于无 API key 的本地开发和单元测试。
-- Ark Responses API 集成，可使用内置 `web_search` 进行真实联网搜索。
-- `RawSignal -> EvidenceItem -> EvidenceCluster -> ScoreLedger -> GateDecision` 主链路。
-- Markdown 评估报告生成，Markdown 正文持久化在 SQLite 的 `evaluation_reports` 表。
-- Gate 为 `go` 或 `conditional_go` 时允许生成 PRD；Ark 模式下 PRD 输出必须通过 Pydantic schema 校验。
-- FastAPI REST API、OpenAPI docs 和 SSE 事件流。
-- React + Vite 正式前端工作台，覆盖项目、运行、报告、设置等核心入口。
-- LLM 调用日志持久化，并通过 `/api/evaluations/{run_id}/llm-logs` 暴露。
+Gem Cutter 面向以下用户：
 
-Current capabilities:
+| 用户 | 主要痛点 | 需要的结果 |
+| --- | --- | --- |
+| 创业者、产品经理 | 信息很多，但难以判断哪些热点值得投入 | 机会排序、证据缺口、验证建议 |
+| 自媒体作者、编辑 | 发现热点慢，容易追到假热点或过时热点 | 受众匹配、时效性、内容空间、风险提示 |
+| AI 工程师、技术负责人 | 新模型、新框架、新项目密集出现 | 技术成熟度、生态、集成成本和采用建议 |
+| 投资人、创新部门 | 报告难比较，结论难复核 | 统一评分、来源引用、反向证据和决策记录 |
+| 市场与运营团队 | 热点和用户、渠道、产品动作之间缺少连接 | 可执行实验、内容方向和监测条件 |
 
-- OpportunityProject creation and historical project views.
-- EvaluationRun state machine covering planning, signal collection, evidence normalization, clustering, scoring, Gate review, rendering, and completion/failure.
-- Mock source adapters for local development and tests without an API key.
-- Ark Responses API integration with built-in `web_search` for real web search.
-- The main `RawSignal -> EvidenceItem -> EvidenceCluster -> ScoreLedger -> GateDecision` chain.
-- Markdown evaluation report generation, with Markdown persisted in the SQLite `evaluation_reports` table.
-- PRD generation only after a `go` or `conditional_go` Gate; Ark PRD output must pass Pydantic schema validation.
-- FastAPI REST API, OpenAPI docs, and SSE event stream.
-- Official React + Vite frontend workspace for projects, runs, reports, and settings.
-- Persistent LLM call logs exposed through `/api/evaluations/{run_id}/llm-logs`.
+产品的长期方向不是一次性“热点报告”，而是：
 
-## 业务链路 / Business Chain
+~~~text
+Signal Discovery
+  信号发现
 
-```text
+Evidence-grounded Evaluation
+  证据驱动评估
+
+Actionable Recommendation
+  可执行建议
+
+Continuous Monitoring
+  持续监测与反馈闭环
+~~~
+
+## 当前实现范围
+
+### 已实现
+
+- 创建和查看 OpportunityProject。
+- 创建 EvaluationRun，并在后台任务中执行完整评估。
+- 为 7 个商业维度生成检索计划和问题。
+- Mock Web / News Source Adapter，支持无 API Key 的本地运行和测试。
+- Ark Responses API 集成，可通过内置 web_search 采集真实证据。
+- RawSignal -> EvidenceItem -> EvidenceCluster 的标准化链路。
+- URL / 标题去重、来源可信度、热度、新鲜度、相关性和情绪规则计算。
+- 7 个维度的 ScoreLedger、置信度和后端 Gate 复算。
+- go、conditional_go、hold、stop 四类 Gate 决策。
+- Evaluation Report Markdown 生成并保存到 SQLite。
+- 仅在 go 或 conditional_go 后生成 PRD。
+- Ark PRD 输出通过 Pydantic schema 校验后才会写入报告。
+- FastAPI REST API、OpenAPI 文档和 SSE 事件流。
+- React + Vite 工作台：项目、运行、证据、评分、报告、模型日志和设置。
+- Ark 调用日志持久化，可查看模型输出、推理摘要、事件数量和错误。
+
+### 规划中
+
+以下能力属于产品路线图或设计文档中的目标，当前代码尚未完整实现：
+
+- 自动发现模式和定时 Watchlist。
+- RSS、GitHub、arXiv、Hugging Face、官方博客等正式连接器。
+- 主题实体、别名、多语言归一化和跨来源主题聚类。
+- 热度时间序列、增长率、加速度、突增检测和生命周期识别。
+- 自媒体热点和技术热点专用评估 Profile。
+- Claim / 反向证据 / 支持关系模型。
+- 人工添加证据、人工标注、Gate 覆盖和复核反馈。
+- 全量 Run / Report 查询、断点续跑、取消和失败恢复。
+- Postgres、pgvector、Redis 队列、对象存储和多用户权限。
+
+## 核心业务链路
+
+~~~text
 OpportunityProject
--> EvaluationRun
--> EvaluationPlan
--> RawSignal
--> EvidenceItem
--> EvidenceCluster
--> ScoreLedger
--> GateDecision
--> EvaluationReport / PRD Report
-```
+  -> EvaluationRun
+  -> EvaluationPlan
+  -> RawSignal
+  -> EvidenceItem
+  -> EvidenceCluster
+  -> ScoreLedger
+  -> GateDecision
+  -> EvaluationReport
+  -> PRD Report
+~~~
 
-评估维度使用加权评分：
+一次评估的运行阶段如下：
 
-- `trend_strength`
-- `user_pain`
-- `monetization`
-- `competition_gap`
-- `execution_feasibility`
-- `public_opinion_risk`
-- `timing_window`
+| 阶段 | 作用 | 主要产物 |
+| --- | --- | --- |
+| planning | 将主题拆成维度、问题和预算 | EvaluationPlan |
+| collecting_signals | 调用来源适配器采集原始信号 | RawSignal[] |
+| normalizing_evidence | 标准化字段、去重、打标签和评分属性 | EvidenceItem[] |
+| clustering_evidence | 按维度聚合并生成代表证据 | EvidenceCluster[] |
+| scoring | 计算 7 个维度的分数和置信度 | ScoreLedger[] |
+| gate_review | 根据分数、风险和证据量做门禁判断 | GateDecision |
+| rendering | 生成结构化评估报告 | EvaluationReport |
+| completed | 完成运行并更新项目状态 | completed run |
 
-The evaluation dimensions are weighted and scored:
+当前的运行状态包括 pending、running、completed、failed、cancelled。enriching_evidence 已作为领域枚举保留，但目前增强计算发生在证据标准化阶段，没有单独的执行步骤。
 
-- `trend_strength`
-- `user_pain`
-- `monetization`
-- `competition_gap`
-- `execution_feasibility`
-- `public_opinion_risk`
-- `timing_window`
+## 评估模型
 
-## 架构概览 / Architecture
+### 当前商业机会 Profile
 
-```text
-React + Vite Frontend
-  -> FastAPI Backend
-    -> Domain Services
-      -> Source Adapters / Ark Responses API
-      -> SQLite Relational Store
-```
+当前 MVP 使用 7 个维度和固定权重：
 
-后端负责业务链路、证据标准化、评分复算、Gate 决策、报告保存和 PRD schema 校验。前端负责以工作台形式展示项目、运行状态、报告入口和配置状态。
+| 维度 | 权重 | 关注问题 |
+| --- | ---: | --- |
+| trend_strength | 20% | 热度、增长迹象、来源覆盖和时效性 |
+| user_pain | 18% | 用户痛点、抱怨、明确诉求 |
+| monetization | 18% | 付费意愿、商业模式和预算信号 |
+| competition_gap | 14% | 竞品密度和差异化空间 |
+| execution_feasibility | 12% | MVP 技术难度、成本和周期 |
+| public_opinion_risk | 10% | 舆情、版权、隐私和平台风险 |
+| timing_window | 8% | 主题窗口和持续性 |
 
-The backend owns the business chain, evidence normalization, score recomputation, Gate decisions, report persistence, and PRD schema validation. The frontend presents projects, run status, report entry points, and configuration state in a workspace UI.
+当前评分由后端规则计算。基础分综合可信度、热度和新鲜度，再根据维度语义进行调整，最终限制在 0 到 100。LLM 不负责最终算术。
 
-当前本地架构有意保持轻量：
+### 置信度
 
-- API：FastAPI + Pydantic。
-- Frontend：React + Vite + TypeScript。
-- Storage：SQLite 关系表。
-- LLM/Search：Mock provider 或 Ark Responses API。
-- Future production path：Postgres + optional pgvector, Redis/queue, object storage。
+维度置信度受到以下因素约束：
 
-The local architecture is intentionally lightweight:
+~~~text
+confidence = min(
+  evidence coverage,
+  source diversity,
+  average credibility
+)
+~~~
 
-- API: FastAPI + Pydantic.
-- Frontend: React + Vite + TypeScript.
-- Storage: SQLite relational tables.
-- LLM/Search: mock providers or Ark Responses API.
-- Future production path: Postgres + optional pgvector, Redis/queue, and object storage.
+当前硬性限制：
 
-## 本地启动 / Local Setup
+- 某维度有效证据少于 2 条，置信度最高为 0.45。
+- 某维度只有一个来源平台，置信度最高为 0.60。
+- 没有有效证据时采用保守置信度 0.25。
 
-### 1. Conda 环境 / Conda Environment
+### Gate 规则
 
-使用已有的 `gem-cutter` 环境：
+| Gate | 当前条件 | 默认动作 |
+| --- | --- | --- |
+| go | 总分 >= 75、整体置信度 >= 0.68、风险维度分数 >= 55 | 允许生成完整 MVP PRD |
+| conditional_go | 总分 >= 62、整体置信度 >= 0.55 | 允许生成带假设和风险项的 PRD |
+| hold | 未达到以上条件，但没有触发停止条件 | 补充证据后重新评估 |
+| stop | 风险维度 < 35、有效证据少于 3 条或总分 < 50 | 停止或归档当前机会 |
 
-Use the existing `gem-cutter` environment:
+Gate 的总分和整体置信度由后端根据 ScoreLedger 的权重重新计算。模型返回的推荐 Gate（如果未来接入）不能直接覆盖后端结果。
 
-```powershell
+### 未来 Profile
+
+同一热点对不同用户的价值不同。后续建议将固定商业 Profile 扩展为可配置的 EvaluationProfile：
+
+~~~text
+CommercialProfile
+  trend_strength, user_pain, monetization, competition_gap, ...
+
+MediaProfile
+  audience_fit, novelty, shareability, timeliness,
+  fact_verifiability, copyright_risk, platform_fit
+
+TechnologyProfile
+  technical_maturity, adoption_signal, ecosystem_strength,
+  integration_effort, deployment_cost, license_risk, security_risk
+~~~
+
+每种 Profile 都应同时返回分数、置信度、证据覆盖率、缺失证据、反向证据、假设和推荐动作，而不是只输出一个总分。
+
+## 系统架构
+
+### 当前实现
+
+~~~text
+React + Vite + TypeScript
+          |
+          v
+FastAPI REST + SSE
+          |
+          v
+Domain Services
+  - ProjectService
+  - EvaluationService
+  - EvidenceService
+  - ScoringService
+  - ReportService
+          |
+          +--> Source Adapters
+          |      - Mock Web
+          |      - Mock News
+          |      - Ark Built-in Web Search
+          |      - Manual adapter placeholder
+          |
+          +--> SQLiteStore
+                 - relational tables
+                 - JSON columns for nested fields
+~~~
+
+后端拥有业务规则：创建项目、推进运行状态、证据标准化、评分复算、Gate 决策、报告保存和 PRD schema 校验。前端负责工作台交互、状态展示、轮询、SSE 事件和报告阅读。
+
+### 目标演进架构
+
+~~~mermaid
+flowchart LR
+  Sources["RSS / News / GitHub / Papers / Community"] --> Ingestion["Connector & Ingestion"]
+  Ingestion --> Raw["Raw Documents / Snapshots"]
+  Raw --> Normalize["Normalize / Canonicalize"]
+  Normalize --> Topics["Topic & Entity Engine"]
+  Normalize --> Evidence["Evidence Ledger"]
+  Evidence --> Claims["Claim & Counter-evidence"]
+  Topics --> Trends["Trend Time Series"]
+  Claims --> Evaluate["Profile-based Evaluation"]
+  Trends --> Evaluate
+  Evaluate --> Decision["Gate / Recommendation / Experiment"]
+  Decision --> Reports["Report / PRD / API"]
+  Decision --> Alerts["Watchlist / Alerts"]
+  LLM["LLM Gateway"] --> Normalize
+  LLM --> Claims
+  LLM --> Evaluate
+  DB["Postgres + pgvector"] --> Raw
+  DB --> Evidence
+  DB --> Topics
+  DB --> Evaluate
+  UI["React Workspace"] --> API["FastAPI API"]
+  API --> DB
+  API --> Decision
+~~~
+
+个人开源项目建议优先保持“模块化单体 + 异步任务”的形态：先把领域边界、数据契约和评估流程做好，再在真实负载出现后引入 Redis 队列、Postgres、向量检索和对象存储，避免过早拆分微服务。
+
+## LLM 的职责边界
+
+Gem Cutter 的核心工程判断是：**让 LLM 处理语义不确定性，让后端处理业务确定性。**
+
+| 任务 | 推荐负责方 |
+| --- | --- |
+| 生成研究问题 | LLM + 后端模板约束 |
+| 识别主题、别名和实体 | LLM，结果需校验 |
+| 摘要、分类、主张抽取 | LLM，结果写入结构化 schema |
+| 语义去重和反向证据搜索 | LLM + 规则 / 向量检索 |
+| 评分草案和解释 | LLM 可以参与 |
+| 加权总分 | 后端复算 |
+| 置信度上限 | 后端计算 |
+| Gate 决策 | 后端计算 |
+| 证据引用合法性 | 后端校验 |
+| Markdown / PRD 表达 | LLM 或模板，但只能读取已验证上下文 |
+
+所有 Ark 结构化输出都应先经过 Pydantic 校验，再写入 SQLite。外部网页内容被视为证据，不被视为系统提示、开发者指令或工具指令。
+
+## 本地启动
+
+### 环境准备
+
+项目使用 Conda 环境 gem-cutter。如果环境已经存在：
+
+~~~powershell
 conda activate gem-cutter
 python -m pip install -r requirements.txt
-```
+~~~
 
-如需重建或同步环境：
+如果需要创建或同步环境：
 
-To recreate or update the environment:
-
-```powershell
+~~~powershell
 conda env update -n gem-cutter -f environment.yml
-```
+~~~
 
-不激活环境时也可以运行：
+也可以不激活环境：
 
-Without activating the environment:
-
-```powershell
+~~~powershell
 conda run -n gem-cutter python main.py
-```
+~~~
 
-### 2. 启动后端 / Run Backend
+### 启动后端
 
-```powershell
+~~~powershell
 conda activate gem-cutter
 python main.py
-```
+~~~
 
 默认地址：
 
-Default URLs:
+~~~text
+API:           http://127.0.0.1:8000
+OpenAPI Docs:  http://127.0.0.1:8000/docs
+Health:        http://127.0.0.1:8000/health
+Config Status: http://127.0.0.1:8000/api/config/status
+~~~
 
-```text
-API: http://127.0.0.1:8000
-Docs: http://127.0.0.1:8000/docs
-Config status: http://127.0.0.1:8000/api/config/status
-Health: http://127.0.0.1:8000/health
-```
-
-### 3. 启动前端 / Run Frontend
+### 启动前端
 
 在第二个终端中：
 
-In a second terminal:
-
-```powershell
+~~~powershell
 cd frontend
 npm install
 npm run dev
-```
+~~~
 
-打开：
+打开 http://127.0.0.1:5173。前端默认请求 http://127.0.0.1:8000，也可以在“系统设置”页修改 API Base URL；配置保存在浏览器 localStorage 中。
 
-Open:
+旧静态 Demo 保留在 frontend/legacy/mvp-demo.html。
 
-```text
-http://127.0.0.1:5173
-```
+## 配置
 
-前端默认连接：
+配置加载顺序：
 
-The frontend defaults to:
+~~~text
+GEM_CUTTER_CONFIG 指定的文件
+  -> config/settings.json
+  -> config/settings.example.json
+  -> 默认值
+~~~
 
-```text
-http://127.0.0.1:8000
-```
+config/settings.json 被 git 忽略，可能包含 API Key。不要把 API Key 写入代码、报告、日志、前端或 data/。
 
-也可以在前端 Settings 页面调整 API base URL。旧静态 demo 已归档到：
+### Mock 模式（默认）
 
-You can change the API base URL from the frontend Settings page. The old static demo is archived at:
-
-```text
-frontend/legacy/mvp-demo.html
-```
-
-## 配置 / Configuration
-
-运行配置来自：
-
-Runtime configuration is loaded from:
-
-```text
-config/settings.json
-config/settings.example.json
-```
-
-`config/settings.json` 被 git 忽略，因为它可能包含 API key。不要提交、打印或记录 API key。
-
-`config/settings.json` is ignored by git because it may contain API keys. Do not commit, print, or log API keys.
-
-### Mock Mode
-
-```json
+~~~json
 {
-  "llm": {"provider": "mock"},
-  "search": {"provider": "mock"}
+  "llm": {
+    "provider": "mock"
+  },
+  "search": {
+    "provider": "mock",
+    "max_workers": 3,
+    "per_dimension_workers": 2,
+    "evidence_per_dimension": 5
+  }
 }
-```
+~~~
 
-### Ark Responses API Mode
+Mock 模式不需要外部 API Key。搜索结果是用于本地开发和测试的合成信号，不应当被当作真实市场结论。
 
-```json
+### Ark Responses API 模式
+
+~~~json
 {
-  "llm": {"provider": "ark"},
+  "llm": {
+    "provider": "ark"
+  },
   "search": {
     "provider": "ark_builtin",
     "max_workers": 10,
@@ -253,177 +398,298 @@ config/settings.example.json
     "max_output_tokens": 12000
   }
 }
-```
+~~~
 
-环境变量也可以覆盖配置：
+也可以通过环境变量覆盖：
 
-Environment variables can override local config:
-
-```powershell
+~~~powershell
 $env:ARK_API_KEY="YOUR_API_KEY"
 $env:GEM_CUTTER_LLM_PROVIDER="ark"
 $env:GEM_CUTTER_SEARCH_PROVIDER="ark_builtin"
-```
+~~~
 
-Ark 搜索并发参数：
+真实 Ark 搜索需要：
 
-Ark search concurrency settings:
+1. 配置 API Key；
+2. search.provider 设置为 ark_builtin；
+3. Ark 账户或项目启用内置 web_search；
+4. 重启后端。
 
-```json
+如果 ark_builtin 没有可用 API Key，当前实现会回退到 Mock Web / News，保证本地界面仍然可以运行。
+
+### 并发参数
+
+~~~json
 "search": {
-  "provider": "ark_builtin",
   "max_workers": 10,
   "per_dimension_workers": 2,
   "evidence_per_dimension": 5
 }
-```
+~~~
 
-## 存储 / Storage
+- max_workers：跨检索问题的线程池上限。
+- per_dimension_workers：每个维度生成的研究问题数量上限。
+- evidence_per_dimension：每个维度最终保留的去重 RawSignal 数量上限。
 
-当前本地运行使用 SQLite：
+## API
 
-The current local runtime uses SQLite:
+### 健康检查与配置
 
-```text
+~~~text
+GET /health
+GET /api/config/status
+~~~
+
+### 项目与评估
+
+~~~text
+POST /api/projects
+GET  /api/projects
+GET  /api/projects/{project_id}
+
+POST /api/projects/{project_id}/evaluations
+POST /api/evaluations/{run_id}/run-sync
+GET  /api/evaluations/{run_id}
+GET  /api/evaluations/{run_id}/view
+GET  /api/evaluations/{run_id}/evidence
+GET  /api/evaluations/{run_id}/scores
+GET  /api/evaluations/{run_id}/llm-logs
+GET  /api/evaluations/{run_id}/stream
+~~~
+
+### 报告与 PRD
+
+~~~text
+POST /api/evaluations/{run_id}/prd
+GET  /api/reports/{report_id}
+GET  /api/reports/{report_id}/markdown
+~~~
+
+POST /api/evaluations/{run_id}/prd 在 Gate 不是 go 或 conditional_go 时返回冲突错误，不会绕过决策门直接生成 PRD。
+
+SSE 事件包括：
+
+~~~text
+evaluation.started
+plan.created
+evidence.search_started
+evidence.search_failed
+raw_signal.added
+evidence.added
+evidence.clustered
+score.updated
+gate.decided
+report.generated
+prd.generated
+evaluation.completed
+evaluation.failed
+~~~
+
+## 存储模型
+
+默认数据库：
+
+~~~text
 data/gem_cutter.db
-```
+~~~
 
-领域数据存储在专用关系表中，而不是通用 JSON payload 日志表。当前主要表：
+当前使用 SQLite 专用关系表：
 
-Domain data is stored in dedicated relational tables rather than a generic JSON payload log. Main tables:
+~~~text
+opportunity_projects  项目上下文
+evaluation_runs       运行状态、计划和预算
+raw_signals           来源适配器返回的原始信号
+evidence_items        标准化证据
+evidence_clusters     证据聚合结果
+score_ledgers         维度评分账本
+gate_decisions        Gate 决策
+evaluation_reports    报告元数据和 Markdown 正文
+llm_call_logs         Ark 调用与流式日志
+event_records         SSE 事件记录
+~~~
 
-```text
-opportunity_projects
-evaluation_runs
-raw_signals
-evidence_items
-evidence_clusters
-score_ledgers
-gate_decisions
-evaluation_reports
-llm_call_logs
-event_records
-```
+自然嵌套的字段使用 JSON 列，例如 plan、budget、raw_payload、tags、structured_data、evidence_refs 和 raw_events。报告 Markdown 保存在 evaluation_reports.markdown，通过 API 读取。
 
-嵌套字段仍然以 JSON 列保存，例如 `tags`、`raw_payload`、`structured_data`、`evidence_refs` 和 `raw_events`。报告 Markdown 正文保存在 `evaluation_reports.markdown`，并通过 API 暴露：
+当前 SQLite 实现不迁移旧的 data/gem_cutter_store.json，也不再使用旧的 domain_entities / report_markdowns 作为运行数据来源。
 
-Nested fields still use JSON columns where appropriate, such as `tags`, `raw_payload`, `structured_data`, `evidence_refs`, and `raw_events`. Report Markdown is stored in `evaluation_reports.markdown` and exposed through:
+## 前端工作台
 
-```text
-GET /api/reports/{report_id}/markdown
-```
+正式前端位于 frontend/，路由如下：
 
-本轮 SQLite 关系表重构不迁移旧 JSON 数据。旧 `data/gem_cutter_store.json` 不再读取；旧通用表 `domain_entities` / `report_markdowns` 不再作为运行数据来源。
+| 路由 | 作用 |
+| --- | --- |
+| /dashboard | 系统状态、项目概览和评估链路 |
+| /projects | 创建和浏览机会项目 |
+| /projects/:projectId | 单个项目的运行、证据、评分、Gate、报告和模型日志 |
+| /runs | 按项目聚合展示最近运行 |
+| /reports | 报告和 PRD Markdown 阅读 |
+| /settings | API Base URL 和后端 provider 状态 |
 
-The current SQLite relational refactor does not migrate old JSON data. Old `data/gem_cutter_store.json` is no longer read; old generic tables such as `domain_entities` / `report_markdowns` are no longer used as runtime sources.
+项目工作台的主要交互是：
 
-## 测试 / Tests
+~~~text
+创建项目
+  -> 自动启动评估
+  -> SSE + 轮询查看阶段进度
+  -> 点击评分维度筛选证据
+  -> 审阅证据与模型日志
+  -> 查看 Gate 与评估报告
+  -> Gate 通过后生成 PRD
+~~~
+
+当前前端是单用户本地工作台。它没有用户认证、权限、多租户和跨项目证据检索。
+
+## 代码地图
+
+### 后端入口
+
+~~~text
+main.py                         Uvicorn 启动入口
+backend/app/main.py             FastAPI 应用和 REST / SSE 路由
+~~~
+
+### 领域层
+
+~~~text
+backend/app/domain/models.py    Pydantic 领域模型、枚举、评分权重
+backend/app/domain/store.py     SQLiteStore 和 StoreProtocol
+backend/app/domain/services.py  项目、证据、评分、报告、评估编排服务
+backend/app/domain/sources.py   Source Adapter 和 Ark 搜索映射
+~~~
+
+### Ark 集成
+
+~~~text
+backend/app/core/config.py                  配置读取与环境变量覆盖
+backend/app/integrations/ark/client.py      Responses API、SSE、重试、解析
+backend/app/integrations/ark/schemas.py     证据和 PRD Pydantic schema
+backend/app/integrations/ark/prompts.py     搜索与 PRD prompt
+backend/app/integrations/ark/errors.py      Ark 错误类型
+~~~
+
+### 前端
+
+~~~text
+frontend/src/app/                 Provider、路由和运行时设置
+frontend/src/layouts/             AppShell 和全局工作区布局
+frontend/src/pages/               Dashboard、Projects、Runs、Reports、Settings
+frontend/src/components/          证据板、评分板、时间线、日志、报告组件
+frontend/src/services/api.ts      后端 API client
+frontend/src/types/api.ts         前后端数据类型
+frontend/src/styles/              全局样式和设计 token
+~~~
+
+### 设计文档
+
+~~~text
+docs/current/system-overview.md       总体架构和生产化方向
+docs/current/evaluation-chain.md      证据链、评分账本和 Gate 设计
+docs/current/domain-model.md          领域模型和存储规划
+docs/current/ark-integration.md       Ark 搜索、LLM、流式日志设计
+docs/current/frontend-architecture.md React 前端信息架构
+~~~
+
+## 测试与验证
+
+项目遵循 AGENTS.md：默认不自动运行测试；修改风险较高或用户明确要求时再运行。
 
 运行单元测试：
 
-Run unit tests:
-
-```powershell
+~~~powershell
 conda run -n gem-cutter python -m unittest discover -s tests -v
-```
+~~~
 
-检查依赖一致性：
+检查依赖：
 
-Check dependency consistency:
-
-```powershell
+~~~powershell
 conda run -n gem-cutter python -m pip check
-```
+~~~
 
-测试使用 mock 或 fake transport，不需要真实 Ark API key。
+现有测试覆盖：
 
-Tests use mock providers or fake transports and do not require a real Ark API key.
+- Mock 模式下从项目创建到报告保存的完整评估链路；
+- 7 个 ScoreLedger 是否生成；
+- SQLite 重载后数据是否可读取；
+- Ark 请求体是否包含 JSON Schema、工具和 tool_choice；
+- Ark 证据结果到 RawSignal 的映射；
+- Fake transport，不依赖真实 API Key。
 
-## 代码地图 / Code Map
+后续应补充的质量指标和测试：
 
-入口：
+- 主题聚类纯度和重复证据率；
+- 证据引用合法率；
+- 反向证据召回率；
+- Gate 结果对权重变化的敏感性；
+- 真实连接器的限流、重试和快照一致性；
+- LLM 结构化输出失败、截断和工具不可用时的降级行为。
 
-Entrypoints:
+## 当前边界与已知限制
 
-```text
-main.py
-backend/app/main.py
-```
+当前版本是一个本地 MVP 垂直切片，以下限制是有意保留的工程边界：
 
-核心领域：
+- 默认 Mock 数据不是现实市场数据，不能用于真实商业结论。
+- 当前热点识别仍是“输入主题后进行评估”，还不是自动发现和定时监测。
+- 当前聚类主要按维度生成一个 cluster，没有 embedding 语义聚类。
+- 当前评分使用确定性规则，ArkScoreDraftResult 尚未接入评分主链路。
+- Manual Adapter 目前是占位实现，没有人工证据 API。
+- 没有真实的 GET /api/evaluations 和 GET /api/reports 全量列表接口。
+- 没有任务队列、断点续跑、取消运行、鉴权和多租户。
+- SSE 当前通过轮询 SQLite 事件表实现，适合本地 MVP，不适合高并发生产环境。
+- 报告 Markdown 当前保存于 SQLite，不使用对象存储。
+- 当前没有把单个 Claim 作为独立实体保存，证据与结论之间仍主要通过 evidence ID 关联。
 
-Core domain:
+这些限制不改变当前 MVP 的核心原则：任何重要判断都应该能够回到证据、评分和 Gate。
 
-```text
-backend/app/domain/models.py
-backend/app/domain/store.py
-backend/app/domain/services.py
-backend/app/domain/sources.py
-```
+## 演进路线
 
-Ark 集成：
+### Phase 1：稳固评估闭环
 
-Ark integration:
+- 增加人工证据、证据状态编辑和 Gate 复核接口。
+- 增加全量 Run / Report 查询。
+- 增加失败重试、运行 checkpoint 和可重跑阶段。
+- 将评估参数抽象为可保存的 EvaluationProfile。
 
-```text
-backend/app/core/config.py
-backend/app/integrations/ark/client.py
-backend/app/integrations/ark/schemas.py
-backend/app/integrations/ark/prompts.py
-backend/app/integrations/ark/errors.py
-```
+### Phase 2：自动热点发现
 
-前端：
+- 接入 RSS、新闻、GitHub、arXiv、Hugging Face 和官方发布源。
+- 保存原始文档快照和版本。
+- 增加主题、别名、实体和多语言归一化。
+- 增加新主题检测、跨平台传播和来源多样性指标。
 
-Frontend:
+### Phase 3：趋势分析与多 Profile 评估
 
-```text
-frontend/
-frontend/src/app/
-frontend/src/layouts/
-frontend/src/pages/
-frontend/src/components/
-frontend/src/services/
-frontend/src/types/
-frontend/src/styles/
-```
+- 增加热度时间序列、增长率、加速度、突增检测和生命周期。
+- 增加商业、自媒体、技术三类 Profile。
+- 引入 Claim、支持关系、反向证据和敏感性分析。
+- 输出“观察 / 补证据 / 用户验证 / 做 Demo / 进入开发 / 停止”的行动建议。
 
-测试：
+### Phase 4：持续监测和反馈闭环
 
-Tests:
+- Watchlist、定时评估、阈值告警和日报。
+- 记录用户采纳、拒绝、修正和误报反馈。
+- 建立热点识别、证据质量、评分校准和推荐接受率评测集。
 
-```text
-tests/test_evaluation_pipeline.py
-tests/test_ark_integration.py
-```
+### Phase 5：生产化部署
 
-关键设计文档：
+- PostgreSQL + pgvector 作为主数据和向量检索层。
+- Redis + ARQ 或同类队列执行长任务。
+- 对象存储保存原始页面、报告和导出产物。
+- OpenTelemetry、结构化日志、成本统计和模型路由。
+- Docker Compose 起步，按负载再拆分服务。
 
-Key design docs:
+## 开发原则
 
-```text
-docs/current/domain-model.md
-docs/current/evaluation-chain.md
-docs/current/ark-integration.md
-docs/current/frontend-architecture.md
-```
-
-## 开发原则 / Development Principles
-
-- 保持证据链：不要绕过 `RawSignal -> EvidenceItem -> EvidenceCluster -> ScoreLedger -> GateDecision`。
+- 保持 RawSignal -> EvidenceItem -> EvidenceCluster -> ScoreLedger -> GateDecision 主链路。
+- 报告和 PRD 必须来自结构化证据与评分账本，不能退化为自由格式生成。
 - 后端复算总分、置信度和 Gate，不信任 LLM 算术作为最终结果。
-- PRD 只能在 `go` 或 `conditional_go` Gate 后生成。
-- LLM 输出在写入报告前必须通过 Pydantic schema 校验。
-- Mock adapters 和测试必须继续可用，不依赖真实 API key。
-- 不要提交 secrets、`config/settings.json`、`data/`、日志或运行产物。
-- 本地 SQLite 是当前开发存储；Postgres + pgvector 是后续生产化目标。
+- LLM 输出在进入 Store 或 Markdown 前必须通过 Pydantic schema 校验。
+- 对外部网页内容执行“证据不是指令”的提示词隔离原则。
+- 保存来源、查询、模型、事件和错误，保证评估过程可以复盘。
+- Mock adapters 和 fake transport 必须继续可用，不让测试依赖真实 API Key。
+- 不把 API Key 写入代码、日志、报告、前端或运行产物。
+- 当前 SQLite 是本地开发存储；Postgres、pgvector、队列和对象存储属于后续生产化路径。
+- 先验证真实用户价值、证据质量和评估一致性，再扩展 Agent 数量和基础设施复杂度。
 
-Development principles:
+## License / 许可证
 
-- Preserve the evidence chain; do not bypass `RawSignal -> EvidenceItem -> EvidenceCluster -> ScoreLedger -> GateDecision`.
-- Let the backend recompute totals, confidence caps, and Gate decisions; do not trust LLM arithmetic as final.
-- Generate PRDs only after a `go` or `conditional_go` Gate.
-- Validate LLM outputs with Pydantic before writing reports.
-- Keep mock adapters and tests working without a real API key.
-- Do not commit secrets, `config/settings.json`, `data/`, logs, or runtime artifacts.
-- SQLite is the current local development store; Postgres + pgvector is the future production path.
+当前仓库未声明正式开源许可证。公开发布前请补充 LICENSE，并明确第三方数据源、模型服务和抓取行为的使用边界。
