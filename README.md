@@ -1,5 +1,9 @@
 # Gem Cutter
 
+<p align="center">
+  <img src="assets/branding/gem-cutter-banner.svg" alt="Gem Cutter 白底横向品牌横幅" width="780">
+</p>
+
 > **Evidence-first AI trend intelligence and opportunity evaluation workspace**
 >
 > 把分散的热点信号，转换为可验证的证据、可复算的评分、明确的决策和可执行的下一步。
@@ -24,6 +28,7 @@ English summary: Gem Cutter is an evidence-first workspace for discovering and e
 
 - [为什么做这个项目](#为什么做这个项目)
 - [产品定位与用户价值](#产品定位与用户价值)
+- [品牌资源](#品牌资源)
 - [当前实现范围](#当前实现范围)
 - [核心业务链路](#核心业务链路)
 - [评估模型](#评估模型)
@@ -80,6 +85,10 @@ Actionable Recommendation
 Continuous Monitoring
   持续监测与反馈闭环
 ~~~
+
+## 品牌资源
+
+Logo 系列以 `cutter.svg` 原稿为基础，保留蓝色切面与青绿色上升箭头的核心识别，并补充深浅背景、单色、应用图标、横向字标和 README 横幅版本。完整文件选择、配色和留白规范见 [品牌资源说明](assets/branding/README.md)。
 
 ## 当前实现范围
 

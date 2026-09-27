@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Gem Cutter mark for light backgrounds</title>
+  <desc id="logo-desc">A faceted blue gem crossed by a rising turquoise arrow.</desc>
+  <defs>
+    <linearGradient id="deep-blue-light" gradientUnits="userSpaceOnUse" x1="180" y1="190" x2="720" y2="910">
+      <stop offset="0" stop-color="#0A3F8E"/>
+      <stop offset="1" stop-color="#062C73"/>
+    </linearGradient>
+    <linearGradient id="bright-blue-light" gradientUnits="userSpaceOnUse" x1="340" y1="200" x2="820" y2="750">
+      <stop offset="0" stop-color="#075FB9"/>
+      <stop offset="1" stop-color="#084A9D"/>
+    </linearGradient>
+    <linearGradient id="turquoise-light" gradientUnits="userSpaceOnUse" x1="120" y1="906" x2="945" y2="113">
+      <stop offset="0" stop-color="#0C8F8A"/>
+      <stop offset="1" stop-color="#087875"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#deep-blue-light)">
+    <path d="M79 398L239 187H407L297 398Z"/><path d="M594 187H708L752 226L672 317Z"/><path d="M782 398L854 318L917 398Z"/>
+    <path d="M79 426H297L338 547L258 641Z"/><path d="M327 426H439L359 521Z"/><path d="M487 426H578L535 476Z"/>
+    <path d="M343 743L389 686L456 879Z"/><path d="M409 661L469 585L540 659L618 575L498 912Z"/>
+  </g>
+  <g fill="url(#bright-blue-light)">
+    <path d="M329 398L440 187H561L652 341L602 398Z"/><path d="M755 426H918L541 879L667 520Z"/>
+  </g>
+  <path fill="url(#turquoise-light)" d="M120 906L463 442L535 517L790 223L739 177L945 113L909 327L853 279L540 618L468 543Z"/>
+</svg>

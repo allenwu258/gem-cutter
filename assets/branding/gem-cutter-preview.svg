@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1020" viewBox="0 0 1600 1020" role="img" aria-labelledby="preview-title preview-desc">
+  <title id="preview-title">Gem Cutter identity system</title>
+  <desc id="preview-desc">Gem Cutter mark, light and dark lockups, application icons, and white banner.</desc>
+  <defs>
+    <g id="preview-mark-dark">
+      <g fill="#5DABFF">
+        <path d="M79 398L239 187H407L297 398Z"/><path d="M594 187H708L752 226L672 317Z"/><path d="M782 398L854 318L917 398Z"/>
+        <path d="M79 426H297L338 547L258 641Z"/><path d="M327 426H439L359 521Z"/><path d="M487 426H578L535 476Z"/>
+        <path d="M343 743L389 686L456 879Z"/><path d="M409 661L469 585L540 659L618 575L498 912Z"/>
+        <path d="M329 398L440 187H561L652 341L602 398Z"/><path d="M755 426H918L541 879L667 520Z"/>
+      </g>
+      <path fill="#55D6CB" d="M120 906L463 442L535 517L790 223L739 177L945 113L909 327L853 279L540 618L468 543Z"/>
+    </g>
+    <g id="preview-mark-light">
+      <g fill="#0A3F8E">
+        <path d="M79 398L239 187H407L297 398Z"/><path d="M594 187H708L752 226L672 317Z"/><path d="M782 398L854 318L917 398Z"/>
+        <path d="M79 426H297L338 547L258 641Z"/><path d="M327 426H439L359 521Z"/><path d="M487 426H578L535 476Z"/>
+        <path d="M343 743L389 686L456 879Z"/><path d="M409 661L469 585L540 659L618 575L498 912Z"/>
+        <path d="M329 398L440 187H561L652 341L602 398Z"/><path d="M755 426H918L541 879L667 520Z"/>
+      </g>
+      <path fill="#087875" d="M120 906L463 442L535 517L790 223L739 177L945 113L909 327L853 279L540 618L468 543Z"/>
+    </g>
+  </defs>
+
+  <rect width="1600" height="1020" fill="#EEF4F8"/>
+  <text x="88" y="92" fill="#14201F" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Gem Cutter identity system</text>
+  <text x="88" y="132" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="18">Signal discovery, evidence, and value decisions.</text>
+
+  <rect x="88" y="180" width="680" height="280" rx="24" fill="#102A4E"/>
+  <text x="124" y="222" fill="#A8C7E6" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">DARK SURFACE</text>
+  <svg x="122" y="244" width="170" height="170" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#preview-mark-dark"/></svg>
+  <text x="330" y="318" fill="#F7FBFF" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="700">Gem Cutter</text>
+  <text x="334" y="356" fill="#A8C7E6" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="2.5">AI TREND INTELLIGENCE</text>
+  <path d="M334 380H700" stroke="#2BC4C3" stroke-width="3" opacity=".8"/>
+
+  <rect x="832" y="180" width="680" height="280" rx="24" fill="#FFFFFF" stroke="#DCE8F2"/>
+  <text x="868" y="222" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">LIGHT SURFACE</text>
+  <svg x="866" y="244" width="170" height="170" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#preview-mark-light"/></svg>
+  <text x="1074" y="318" fill="#14201F" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="700">Gem Cutter</text>
+  <text x="1078" y="356" fill="#49605B" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="600" letter-spacing="2.5">AI TREND INTELLIGENCE</text>
+  <path d="M1078 380H1444" stroke="#087875" stroke-width="3" opacity=".8"/>
+
+  <rect x="88" y="506" width="310" height="310" rx="24" fill="#FFFFFF" stroke="#DCE8F2"/>
+  <text x="122" y="552" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">APP ICON</text>
+  <svg x="145" y="580" width="196" height="196" viewBox="0 0 1024 1024" aria-hidden="true">
+    <rect width="1024" height="1024" rx="176" fill="#102A4E"/>
+    <use href="#preview-mark-dark"/>
+  </svg>
+
+  <rect x="430" y="506" width="310" height="310" rx="24" fill="#FFFFFF" stroke="#DCE8F2"/>
+  <text x="464" y="552" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">LIGHT ICON</text>
+  <svg x="487" y="580" width="196" height="196" viewBox="0 0 1024 1024" aria-hidden="true">
+    <rect width="1024" height="1024" rx="176" fill="#F2F7FC"/>
+    <use href="#preview-mark-light"/>
+  </svg>
+
+  <rect x="772" y="506" width="740" height="310" rx="24" fill="#FFFFFF" stroke="#DCE8F2"/>
+  <text x="808" y="552" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="2">WHITE BANNER</text>
+  <svg x="808" y="580" width="670" height="205" viewBox="0 0 1600 560" aria-hidden="true">
+    <rect width="1600" height="560" rx="30" fill="#FFFFFF" stroke="#E7EEF5" stroke-width="4"/>
+    <svg x="112" y="104" width="330" height="330" viewBox="0 0 1024 1024"><use href="#preview-mark-light"/></svg>
+    <text x="590" y="202" fill="#14201F" font-family="Segoe UI, Arial, sans-serif" font-size="92" font-weight="700">Gem Cutter</text>
+    <text x="596" y="255" fill="#087875" font-family="Segoe UI, Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="4">AI TREND INTELLIGENCE</text>
+    <text x="596" y="319" fill="#49605B" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="500">Discover signals. Verify evidence.</text>
+    <g transform="translate(596 382)" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="600">
+      <rect width="170" height="48" rx="24" fill="#F2F7FC" stroke="#D9E6F2"/><text x="85" y="30" text-anchor="middle" fill="#084A9D">SIGNAL DISCOVERY</text>
+      <path d="M184 24H216M210 17L217 24L210 31" fill="none" stroke="#2BC4C3" stroke-width="3"/>
+      <rect x="232" width="170" height="48" rx="24" fill="#F0FAF8" stroke="#C9ECE7"/><text x="317" y="30" text-anchor="middle" fill="#087875">EVIDENCE LEDGER</text>
+      <path d="M416 24H448M442 17L449 24L442 31" fill="none" stroke="#2BC4C3" stroke-width="3"/>
+      <rect x="464" width="170" height="48" rx="24" fill="#FFF7E8" stroke="#F0DCA9"/><text x="549" y="30" text-anchor="middle" fill="#9B6818">VALUE GATE</text>
+    </g>
+  </svg>
+
+  <text x="88" y="928" fill="#14201F" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="600">Primary colors</text>
+  <circle cx="254" cy="922" r="12" fill="#0847A7"/><circle cx="291" cy="922" r="12" fill="#0073E9"/><circle cx="328" cy="922" r="12" fill="#2BC4C3"/>
+  <text x="368" y="929" fill="#60736E" font-family="Segoe UI, Arial, sans-serif" font-size="17">deep blue · bright blue · signal turquoise</text>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Gem Cutter monochrome white mark</title>
+  <desc id="logo-desc">A monochrome faceted gem and rising arrow mark.</desc>
+  <g fill="#FFFFFF">
+    <path d="M79 398L239 187H407L297 398Z"/><path d="M594 187H708L752 226L672 317Z"/><path d="M782 398L854 318L917 398Z"/>
+    <path d="M79 426H297L338 547L258 641Z"/><path d="M327 426H439L359 521Z"/><path d="M487 426H578L535 476Z"/>
+    <path d="M343 743L389 686L456 879Z"/><path d="M409 661L469 585L540 659L618 575L498 912Z"/>
+    <path d="M329 398L440 187H561L652 341L602 398Z"/><path d="M755 426H918L541 879L667 520Z"/>
+    <path d="M120 906L463 442L535 517L790 223L739 177L945 113L909 327L853 279L540 618L468 543Z"/>
+  </g>
+</svg>

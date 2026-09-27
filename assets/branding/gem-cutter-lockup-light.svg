@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="lockup-title lockup-desc">
+  <title id="lockup-title">Gem Cutter lockup for light surfaces</title>
+  <desc id="lockup-desc">Gem Cutter mark with an ink wordmark and the descriptor AI Trend Intelligence.</desc>
+  <g transform="translate(38 38) scale(.238)">
+    <defs>
+      <linearGradient id="lockup-blue-light" gradientUnits="userSpaceOnUse" x1="180" y1="190" x2="720" y2="910"><stop offset="0" stop-color="#0A3F8E"/><stop offset="1" stop-color="#062C73"/></linearGradient>
+      <linearGradient id="lockup-teal-light" gradientUnits="userSpaceOnUse" x1="120" y1="906" x2="945" y2="113"><stop offset="0" stop-color="#0C8F8A"/><stop offset="1" stop-color="#087875"/></linearGradient>
+    </defs>
+    <g fill="url(#lockup-blue-light)">
+      <path d="M79 398L239 187H407L297 398Z"/><path d="M594 187H708L752 226L672 317Z"/><path d="M782 398L854 318L917 398Z"/>
+      <path d="M79 426H297L338 547L258 641Z"/><path d="M327 426H439L359 521Z"/><path d="M487 426H578L535 476Z"/>
+      <path d="M343 743L389 686L456 879Z"/><path d="M409 661L469 585L540 659L618 575L498 912Z"/>
+      <path d="M329 398L440 187H561L652 341L602 398Z"/><path d="M755 426H918L541 879L667 520Z"/>
+    </g>
+    <path fill="url(#lockup-teal-light)" d="M120 906L463 442L535 517L790 223L739 177L945 113L909 327L853 279L540 618L468 543Z"/>
+  </g>
+  <text x="350" y="153" fill="#14201F" font-family="Segoe UI, Arial, sans-serif" font-size="78" font-weight="700" letter-spacing="-1">Gem Cutter</text>
+  <text x="354" y="204" fill="#49605B" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" letter-spacing="3">AI TREND INTELLIGENCE</text>
+  <path d="M354 237H1040" stroke="#087875" stroke-width="3" opacity=".8"/>
+</svg>
