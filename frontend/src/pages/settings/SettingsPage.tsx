@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { RotateCcw, Save } from "lucide-react";
 import { SectionCard } from "../../components/workspace/SectionCard";
 import { StatusBadge } from "../../components/workspace/StatusBadge";
 import { DEFAULT_API_BASE_URL, useRuntimeSettings } from "../../app/runtime";
@@ -39,7 +40,7 @@ export function SettingsPage() {
               <input value={draftApiBaseUrl} onChange={(event) => setDraftApiBaseUrl(event.target.value)} />
             </label>
             <div className="button-row">
-              <button className="button-primary">保存</button>
+              <button className="button-primary"><Save size={15} aria-hidden="true" />保存</button>
               <button
                 className="button-ghost"
                 type="button"
@@ -48,6 +49,7 @@ export function SettingsPage() {
                   setApiBaseUrl(DEFAULT_API_BASE_URL);
                 }}
               >
+                <RotateCcw size={15} aria-hidden="true" />
                 恢复默认
               </button>
             </div>

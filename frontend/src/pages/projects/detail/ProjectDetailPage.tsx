@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FilePlus2, RefreshCw } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { EvidenceBoard } from "../../../components/workspace/EvidenceBoard";
 import { LlmLogPanel } from "../../../components/workspace/LlmLogPanel";
@@ -203,6 +204,7 @@ export function ProjectDetailPage() {
         </div>
         <div className="project-hero__actions">
           <button className="button-ghost" onClick={() => startMutation.mutate()} disabled={startMutation.isPending}>
+            <RefreshCw size={15} aria-hidden="true" />
             {startMutation.isPending ? "启动中..." : runId ? "重新评估" : "启动评估"}
           </button>
           <button
@@ -210,13 +212,14 @@ export function ProjectDetailPage() {
             disabled={!canGeneratePrd || prdMutation.isPending}
             onClick={() => prdMutation.mutate()}
           >
+            <FilePlus2 size={15} aria-hidden="true" />
             {prdMutation.isPending ? "生成中..." : "生成 PRD"}
           </button>
         </div>
       </div>
 
       <div className="metric-grid">
-        <MetricCard label="Gate" value={gate?.action || "-"} helper={gate?.reason || "等待门禁决策"} accent="amber" />
+        <MetricCard label="Gate" value={gate?.action || "-"} helper={gate?.reason || "等待门禁决策"} accent="amber" compactValue />
         <MetricCard label="总分" value={gate?.total_score ?? "-"} helper="后端复算加权分" accent="teal" />
         <MetricCard label="置信度" value={gate?.confidence ?? "-"} helper="受证据覆盖限制" accent="ink" />
         <MetricCard
