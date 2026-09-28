@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { CSSProperties } from "react";
+import { Activity, ArrowUpRight, FileText, FolderKanban, Server, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MetricCard } from "../../components/workspace/MetricCard";
 import { ProjectTable } from "../../components/workspace/ProjectTable";
@@ -7,15 +7,6 @@ import { SectionCard } from "../../components/workspace/SectionCard";
 import { StatusBadge } from "../../components/workspace/StatusBadge";
 import { getConfigStatus, listProjects } from "../../services/api";
 import { useRuntimeSettings } from "../../app/runtime";
-
-const pipelineStages = [
-  "Opportunity",
-  "EvaluationRun",
-  "Evidence Ledger",
-  "Score Ledger",
-  "Gate",
-  "Report / PRD",
-];
 
 export function DashboardPage() {
   const { apiBaseUrl } = useRuntimeSettings();
@@ -35,49 +26,31 @@ export function DashboardPage() {
 
   return (
     <div className="page-stack">
-      <section className="hero-panel">
-        <div className="hero-panel__copy">
-          <span className="eyebrow">Official workspace preview</span>
-          <h2>把热点判断变成可审计的商业决策链路</h2>
-          <p>
-            Gem Cutter 正式版工作台围绕证据账本、评分账本、决策门和 PRD 产物组织界面。
-            用户不再面对单页 JSON 调试板，而是在一个可复盘的评估指挥台中推进机会。
-          </p>
-          <div className="hero-panel__actions">
-            <Link className="button-primary" to="/projects">
-              进入机会项目
-            </Link>
-            <Link className="button-ghost" to="/settings">
-              检查系统配置
-            </Link>
-          </div>
+      <div className="page-heading">
+        <div>
+          <span className="eyebrow">WORKSPACE / OVERVIEW</span>
+          <h2>运行概览</h2>
         </div>
-        <div className="hero-orbit" aria-label="评估链路">
-          {pipelineStages.map((stage, index) => (
-            <span key={stage} style={{ "--i": index } as CSSProperties}>
-              {stage}
-            </span>
-          ))}
-        </div>
-      </section>
+        <Link className="button-ghost" to="/projects">机会项目 <ArrowUpRight size={16} aria-hidden="true" /></Link>
+      </div>
 
       <div className="metric-grid">
-        <MetricCard label="机会项目" value={projects.length} helper="已创建项目总数" accent="teal" />
-        <MetricCard label="评估中" value={evaluatingCount} helper="正在运行或等待结果" accent="amber" />
-        <MetricCard label="已完成" value={completedCount} helper="形成 gate 决策" accent="ink" />
-        <MetricCard label="报告产物" value={reportCount} helper="可审阅报告/PRD" accent="red" />
+        <MetricCard label="机会项目" value={projects.length} helper="已创建项目总数" icon={FolderKanban} />
+        <MetricCard label="评估中" value={evaluatingCount} helper="正在运行或等待结果" accent="amber" icon={Activity} />
+        <MetricCard label="已完成" value={completedCount} helper="形成 Gate 决策" accent="ink" icon={ShieldCheck} />
+        <MetricCard label="报告产物" value={reportCount} helper="可审阅报告与 PRD" accent="red" icon={FileText} />
       </div>
 
       <div className="dashboard-grid">
         <SectionCard
           title="最近机会"
           kicker="Project Ledger"
-          action={<Link to="/projects">查看全部</Link>}
+          action={<Link to="/projects">查看全部 <ArrowUpRight size={15} aria-hidden="true" /></Link>}
         >
           <ProjectTable projects={projects.slice(0, 5)} />
         </SectionCard>
 
-        <SectionCard title="系统状态" kicker="Runtime">
+        <SectionCard title="系统状态" kicker="Runtime" action={<Server size={18} aria-hidden="true" />}>
           <div className="status-list">
             <div>
               <span>LLM Provider</span>

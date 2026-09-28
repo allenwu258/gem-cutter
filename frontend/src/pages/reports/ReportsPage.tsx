@@ -49,7 +49,7 @@ export function ReportsPage() {
         <div>
           <span className="eyebrow">Artifacts</span>
           <h2>产物中心</h2>
-          <p>正式版前端将评估报告和 PRD 作为可复盘产物，而不是临时输出。</p>
+          <p>审阅评估报告与 PRD，追溯项目结论。</p>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { useDeferredValue, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowUpRight, Play } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ProjectTable } from "../../components/workspace/ProjectTable";
 import { SectionCard } from "../../components/workspace/SectionCard";
@@ -51,7 +52,7 @@ export function ProjectsPage() {
         <div>
           <span className="eyebrow">Opportunity Projects</span>
           <h2>机会项目</h2>
-          <p>正式版前端以项目为上下文承载每一次评估、证据、评分、门禁和产物。</p>
+          <p>创建机会并查看每次评估的证据、评分与结论。</p>
         </div>
         <StatusBadge value={`${projects.length} projects`} tone="neutral" />
       </div>
@@ -94,6 +95,7 @@ export function ProjectsPage() {
               />
             </label>
             <button className="button-primary" disabled={createAndRunMutation.isPending}>
+              <Play size={15} fill="currentColor" aria-hidden="true" />
               {createAndRunMutation.isPending ? "正在创建评估..." : "创建并启动评估"}
             </button>
             {createAndRunMutation.isError ? (
@@ -102,7 +104,7 @@ export function ProjectsPage() {
           </form>
         </SectionCard>
 
-        <SectionCard title="浏览项目" kicker="Project Ledger" action={<Link to="/runs">运行中心</Link>}>
+        <SectionCard title="浏览项目" kicker="Project Ledger" action={<Link to="/runs">运行中心 <ArrowUpRight size={15} aria-hidden="true" /></Link>}>
           <div className="toolbar">
             <input
               placeholder="搜索标题、主题或市场..."
